@@ -42,6 +42,7 @@ export const loginResource = "/Login";
 // const localApiUri = `http://localhost:${apiPort}/api`;
 // const externalApiUri = null;
 
+// external
 const externallApiUri = `https://eventapiwebrebeca.azurewebsites.net/api`;
 
 const api = axios.create({
