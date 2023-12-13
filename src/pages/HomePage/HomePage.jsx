@@ -1,90 +1,94 @@
 import React, { useEffect, useState } from "react";
 import "./HomePage.css";
-
 import Banner from "../../components/Banner/Banner";
+import Container from "../../components/Container/Container";
+import NextEvent from "../../components/NextEvent/NextEvent";
+import ContactSection from "../../components/ContactSection/ContactSection";
 import MainContent from "../../components/MainContent/MainContent";
 import VisionSection from "../../components/VisionSection/VisionSection";
-import ContactSection from "../../components/ContactSection/ContactSection";
-import Title from "../../components/Title/Title";
-import NextEvent from "../../components/NextEvent/NextEvent";
-import Container from "../../components/Container/Container";
-import api from "../../Services/Service";
-import Notification from "../../components/Notification/Notification";
+import Titulo from "../../components/Title/Title";
+import api, { previousEventResource } from "../../Services/Service";
 import { nextEventResource } from "../../Services/Service";
-
+import PreviousEvent from "../../components/PreviousEvent/PreviousEvent";
 
 const HomePage = () => {
-  const [nextEvents, setNextEvents] = useState([]);
-  const [notifyUser, setNotifyUser] = useState(); //Componente Notification
+  const [nextEvents, setNextEvents] = useState([]); 
+  const [previousEvents, setPreviousEvents] = useState([]); 
 
-  // roda somente na inicialização do componente
-  useEffect(() => {
-    async function getNextEvents() {
+  useEffect(()=> {
+    async function  getNextEvents() {
       try {
-        const promise = await api.get(nextEventResource);
+        const promise = await api.get(nextEventResource)
         const dados = await promise.data;
-        // console.log(dados);
-        setNextEvents(dados); //atualiza o state
 
+        setNextEvents(dados); //atualiza o estado
       } catch (error) {
-        console.log("não trouxe os próximos eventos, verifique lá!");
-        // setNotifyUser({
-        //   titleNote: "Erro",
-        //   textNote: `Não foi possível carregar os próximos eventos. Verifique a sua conexão com a internet`,
-        //   imgIcon: "danger",
-        //   imgAlt:
-        //   "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
-        //   showMessage: true,
-        // });
-      }
+        alert("Deu ruim na api!")
+      }   
     }
 
-    getNextEvents(); //chama a função
-  }, []);
+    async function getPreviousEvents() {
+      try {
+        const promise = await api.get(previousEventResource)
+        const dados = await promise.data;
+
+        setPreviousEvents(dados);
+      } catch (error) {
+        alert("abobora")
+      }
+    }
+     getNextEvents(); //roda a função
+     getPreviousEvents();
+  }, [])
+
+
 
   return (
-    
     <MainContent>
-      {<Notification {...notifyUser} setNotifyUser={setNotifyUser} />}
       <Banner />
 
-      {/* PRÓXIMOS EVENTOS */}
       <section className="proximos-eventos">
         <Container>
-          <Title titleText={"Próximos Eventos"} />
+          <title titleText={"Próximos Eventos"} color="#fde100" />
 
           <div className="events-box">
-            {nextEvents.map((e) => {
+
+           {
+            nextEvents.map((e) => {
               return (
-                <NextEvent
-                  key={e.idEvento}
-                  title={e.nomeEvento}
-                  description={e.descricao}
-                  eventDate={e.dataEvento}
-                  idEvent={e.idEvento}
-                />
+              <NextEvent 
+              key={e.idEvento}
+              title={e.nomeEvento}
+              description={e.descricao}
+              eventDate={e.dataEvento}
+              idEvent={e.idEvento}
+              />
               );
-            })}
+            })
+           }
+
           </div>
         </Container>
-      </section>
-
-      <section className="proximos-eventos">
+        
         <Container>
-          <Title titleText={"Todos os Eventos"} />
+          <title titleText={"Eventos Anteriores"} color="#fde100" />
 
           <div className="events-box">
-            {nextEvents.map((e) => {
+
+           {
+            previousEvents.map((p) => {
               return (
-                <NextEvent
-                  key={e.idEvento}
-                  title={e.nomeEvento}
-                  description={e.descricao}
-                  eventDate={e.dataEvento}
-                  idEvent={e.idEvento}
-                />
+              <PreviousEvent
+              key={p.idEvento}
+              title={p.nomeEvento}
+              description={p.descricao}
+              eventDate={p.dataEvento}
+              idEvent={p.idEvento}
+              />
               );
-            })}
+            })
+           }
+
           </div>
         </Container>
       </section>

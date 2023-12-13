@@ -1,53 +1,48 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import ImageIllustrator from "../../components/ImageIllustrator/ImageIllustrator";
+import loginImage from "../../assets/images/login.svg";
 import logo from "../../assets/images/logo-pink.svg";
 import { Input, Button } from "../../components/FormComponents/FormComponents";
-import loginImage from "../../assets/images/login.svg";
 import api, { loginResource } from "../../Services/Service";
-import { useNavigate } from "react-router-dom";
-
-import "./LoginPage.css";
 import { UserContext, userDecodeToken } from "../../context/AuthContext";
+import {useNavigate} from "react-router-dom";
+import "./LoginPage.css";
 
 const LoginPage = () => {
-  const [user, setUser] = useState({ email: "admin@admin.com", senha: "admin123" });
-  //importa os dados globais do usuário
-  const { userData, setUserData } = useContext(UserContext);
+  const [user, setUser] = useState({ email: "rebeca@admin.com", senha: "gustavolindo" });
+  const {userData, setUserData} = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (userData.nome) {
-      navigate("/");
+    navigate("/")
     }
-  }, [userData]);
+  }, [userData])
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // validar usuário e senha:
-    // tamanho mínimo de caracteres : 3
-    if (user.email.length >= 3 && user.senha.length >= 3) {
-      
-      
+    //valida usuario e senha
+    //tamanho minimo de caracteres
+    if (user.email.trim().length >= 3 || user.senha.trim().length >= 3) {
+      //chamar a api
       try {
         const promise = await api.post(loginResource, {
           email: user.email,
           senha: user.senha,
         });
 
-        const userFullToken = userDecodeToken(promise.data.token); // decodifica o token vindo da api
-
-        setUserData(userFullToken); // guarda o token globalmente
-        localStorage.setItem("token", JSON.stringify(userFullToken));
-        navigate("/"); //envia o usuário para a home
+        const userFullToken = userDecodeToken(promise.data.token);
+        setUserData(userFullToken);
+        localStorage.setItem("token", JSON.stringify(userFullToken))
+        navigate('/')
       } catch (error) {
-        // erro da api: bad request (401) ou erro de conexão
-        alert("Verifique os dados e a conexão com a internet!");
-        console.log("ERROS NO LOGIN DO USUÁRIO");
+        alert("Verifque os dados e a conexão com a internet!");
         console.log(error);
       }
     } else {
       alert("Preencha os dados corretamente");
+      return;
     }
   }
   return (
@@ -74,10 +69,7 @@ const LoginPage = () => {
               required={true}
               value={user.email}
               manipulationFunction={(e) => {
-                setUser({
-                  ...user,
-                  email: e.target.value.trim(),
-                });
+                setUser({ ...user, email: e.target.value.trim() });
               }}
               placeholder="Username"
             />
@@ -89,10 +81,7 @@ const LoginPage = () => {
               required={true}
               value={user.senha}
               manipulationFunction={(e) => {
-                setUser({
-                  ...user,
-                  senha: e.target.value.trim(),
-                });
+                setUser({ ...user, senha: e.target.value.trim() });
               }}
               placeholder="****"
             />
@@ -107,6 +96,7 @@ const LoginPage = () => {
               name="btn-login"
               type="submit"
               additionalClass="frm-login__button"
+              manipulationFunction={() => {}}
             />
           </form>
         </div>
