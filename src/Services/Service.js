@@ -1,30 +1,56 @@
-import axios from "axios";
+import axios from 'axios';
 
-export const eventResource = "/Evento";
+/**
+ * Módulo para trabalhar com apis. Disponibiliza as rotas da api bem como o serviço com a biblioteca axios
+ */
 
-export const nextEventResource = "/Evento/ListarProximos";
 
-export const previousEventResource = "/Evento/ListarAnteriores";
 
-export const eventsTypeResource = "/TiposEvento";
+/**
+ * Rota para o recurso Evento
+ */
+export const eventsResource = '/Evento';
+/**
+ * Rota para o recurso Presenças Evento
+ */
+export const presencesEventResource = '/PresencaEvento';
+/**
+ * Rota para o recurso Presenças Evento
+ */
+export const commentaryEventResource = '/ComentariosEvento';
 
-export const loginResource = "/Login";
+/**
+ * Rota para o recurso Próximos Eventos
+ */
+export const nextEventResource = '/Evento/ListarProximos';
 
-export const myEventsResource = "/PresencaEvento/ListarMinhas";
+/**
+ * Rota para o recurso Próximos Eventos
+ */
+export const previousEventResource = '/Evento/ListarAnteriores';
 
-export const presenceEventResource = "/PresencaEvento";
+/**
+ * Rota para o recurso Tipos de Eventos
+ */
+export const eventsTypeResource = '/TipoEvento';
+/**
+ * Rota para o recurso Instituição
+ */
+export const institutionResource = '/Instituicao';
+/**
+ * Rota para o recurso Login
+ */
+export const loginResource = '/Login';
 
-export const commentaryEventResource = "/ComentariosEvento";
-
-export const commentaryEventUserIdResource =
-  "/ComentariosEvento/BuscarPorIdUsuario";
-
-// const apiPort = '7118'
-// const localApiUrl = `https://localhost:${apiPort}/api`
-const externaApiUrl = `https://eventapiwebrebeca.azurewebsites.net/api`;
+const apiPort = '7284';
+const localApiUri = `https://localhost/:${apiPort}/api`;
+const externalApiUri = `https://eventapiwebrebeca.azurewebsites.net/api`
+// const externalApiUri = null;
 
 const api = axios.create({
-  baseURL: externaApiUrl,
+    baseURL: externalApiUri
 });
+
+
 
 export default api;

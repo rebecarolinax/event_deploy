@@ -1,27 +1,37 @@
 import React from "react";
-import { dateFormatDbToView } from "../../../Utils/stringFunctions"
-import { Tooltip } from "react-tooltip";
 import "./TableEv.css";
-
+// import editPen from "../../../assets/images/edit-pen.svg";
 import editPen from "../../../assets/images/edit-pen.svg";
 import trashDelete from "../../../assets/images/trash-delete.svg";
+import { dateFormateDbToView } from "../../../Utils/stringFunctions";
 
-const TableEv = ({ dados, fnDelete = null, fnUpdate = null}) => {
+// importa a biblioteca de tootips ()
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip } from "react-tooltip";
+import { Link } from "react-router-dom";
+
+// import trashDelete from "../../../assets/images/trash-delete.svg";
+
+const Table = ({ dados, fnDelete = null, fnUpdate = null }) => {
+  // console.log(dados);
   return (
     <table className="table-data">
       <thead className="table-data__head">
         <tr className="table-data__head-row">
           <th className="table-data__head-title table-data__head-title--big">
-            Título
+            Evento
           </th>
           <th className="table-data__head-title table-data__head-title--big">
             Descrição
           </th>
           <th className="table-data__head-title table-data__head-title--big">
-            Tipo de evento
+            Tipo Evento
           </th>
           <th className="table-data__head-title table-data__head-title--big">
-            Data do Evento
+            Data
+          </th>
+          <th className="table-data__head-title table-data__head-title--big">
+            Detalhes do Evento
           </th>
           <th className="table-data__head-title table-data__head-title--little">
             Editar
@@ -31,53 +41,72 @@ const TableEv = ({ dados, fnDelete = null, fnUpdate = null}) => {
           </th>
         </tr>
       </thead>
-
       <tbody>
-        {dados.map((ev) => {
-          return (
-            <tr className="table-data__head-row" key={ev.idEvento}>
-              <td className="table-data__data table-data__data--big">
-                {ev.nomeEvento}
-              </td>
+        {
+          dados.map((tp) => {
+            return (
+              <tr className="table-data__head-row" key={tp.idEvento}>
+                <td className="table-data__data table-data__data--big">
+                  {tp.nomeEvento}
+                </td>
+                <td
+                  className="table-data__data table-data__data--big table-data__data--handover"
+                  data-tooltip-id="description-tooltip"
+                  data-tooltip-content={tp.descricao}
+                  data-tooltip-place="top"
+                >
+                  {tp.descricao.substr(0, 15)} ...
+                  <Tooltip
+                    id="description-tooltip"
+                    className="custom-tootip"
+                  />
+                </td>
+                <td className="table-data__data table-data__data--big">
+                  {tp.tipoEvento.titulo}
+                </td>
+                <td className="table-data__data table-data__data--big">
+                  {dateFormateDbToView(tp.dataEvento)} 
+                </td>
+                <td className="table-data__data table-data__data--big">
+                <Link className="table-data__data table-data__data--big Link" to={`/eventdetails/${tp.idEvento}`}>Detalhes</Link>
+                </td>
 
-              <td className="table-data__data table-data__data--big"
-              data-tooltip-id={ev.idEvento}
-              data-tooltip-content={ev.descricao}
-              data-tooltip-place="top"
-              >
-              <Tooltip id={ev.idEvento} className="tooltip"  />
-                {ev.descricao.substr(0,15)}
-              </td>
-              <td className="table-data__data table-data__data--big">
-                {ev.tiposEvento.titulo}
-              </td>
-              <td className="table-data__data table-data__data--big">
-              {dateFormatDbToView(ev.dataEvento)}
-              </td>
+                <td className="table-data__data table-data__data--little">
+                  <img
+                    className="table-data__icon"
+                    idevento={tp.idEvento}
+                    src={editPen}
+                    alt=""
+                    onClick={(e) =>
+                      // dá pra passar o obhjeto tp direto?
+                      fnUpdate({//showUpdateForma(??)
+                        idEvento: tp.idEvento,
+                        nomeEvento: tp.nomeEvento,
+                        dataEvento: tp.dataEvento,
+                        descricao: tp.descricao,
+                        idInstituicao: tp.idInstituicao, //por enquanto chumbado
+                        idTipoEvento: tp.idTipoEvento
+                      })
+                    }
+                  />
+                </td>
 
-              <td className="table-data__data table-data__data--little">
-                <img className="table-data__icon" 
-                    src={editPen} alt="" 
-                    onClick={() => {
-                      fnUpdate(ev.idEvento)
-                    }}
-                />
-              </td>
-
-              <td className="table-data__data table-data__data--little">
-                <img 
-                     className="table-data__icon" 
-                     src={trashDelete} alt="" 
-                     onClick={() => {
-                      fnDelete(ev.idEvento)}} 
-                />
-              </td>
-            </tr>
-          );
-        })}
+                <td className="table-data__data table-data__data--little">
+                  <img
+                    className="table-data__icon"
+                    idevento={tp.idEvento}
+                    src={trashDelete}
+                    alt=""
+                    onClick={(e) => fnDelete(e.target.getAttribute("idevento"))}
+                  />
+                </td>
+              </tr>
+            );
+          })
+        }
       </tbody>
     </table>
   );
 };
 
-export default TableEv;
+export default Table;

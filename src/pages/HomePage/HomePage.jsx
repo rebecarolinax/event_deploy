@@ -1,94 +1,112 @@
 import React, { useEffect, useState } from "react";
 import "./HomePage.css";
+import "react-router-dom"
+
 import Banner from "../../components/Banner/Banner";
-import Container from "../../components/Container/Container";
-import NextEvent from "../../components/NextEvent/NextEvent";
-import ContactSection from "../../components/ContactSection/ContactSection";
 import MainContent from "../../components/MainContent/MainContent";
 import VisionSection from "../../components/VisionSection/VisionSection";
-import Titulo from "../../components/Title/Title";
-import api, { previousEventResource } from "../../Services/Service";
-import { nextEventResource } from "../../Services/Service";
-import PreviousEvent from "../../components/PreviousEvent/PreviousEvent";
+import ContactSection from "../../components/ContactSection/ContactSection";
+import Title from "../../components/Title/Title";
+import NextEvent from "../../components/NextEvent/NextEvent";
+import PreviousEvents from "../../components/PreviousEvent/PreviousEvent"
+import Container from "../../components/Container/Container";
+import api, { nextEventResource, previousEventResource } from "../../Services/Service";
+import Notification from "../../components/Notification/Notification";
+
 
 const HomePage = () => {
-  const [nextEvents, setNextEvents] = useState([]); 
-  const [previousEvents, setPreviousEvents] = useState([]); 
+  const [nextEvents, setNextEvents] = useState([]);
+  const [previousEvents, setPreviousEvents] = useState([]);
+  const [notifyUser, setNotifyUser] = useState(); //Componente Notification
 
-  useEffect(()=> {
-    async function  getNextEvents() {
-      try {
-        const promise = await api.get(nextEventResource)
-        const dados = await promise.data;
+  async function getNextEvents() {
+    try {
+      const promise = await api.get(nextEventResource);
+      const dados = await promise.data;
+      // console.log(dados);
+      setNextEvents(dados); //atualiza o state
 
-        setNextEvents(dados); //atualiza o estado
-      } catch (error) {
-        alert("Deu ruim na api!")
-      }   
+    } catch (error) {
+      console.log("não trouxe os próximos eventos, verifique lá!");
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Não foi possível carregar os próximos eventos. Verifique a sua conexão com a internet`,
+        imgIcon: "danger",
+        imgAlt:
+        "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
+        showMessage: true,
+      });
     }
+  }
 
-    async function getPreviousEvents() {
-      try {
-        const promise = await api.get(previousEventResource)
-        const dados = await promise.data;
+  async function getPreviousEvents() {
+    try {
+      const promise = await api.get(previousEventResource);
+      const dados = await promise.data;
+      // console.log(dados);
+      setPreviousEvents(dados); //atualiza o state
 
-        setPreviousEvents(dados);
-      } catch (error) {
-        alert("abobora")
-      }
+    } catch (error) {
+      console.log("Erro ao carregar eventos passados");
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Não foi possível carregar os próximos eventos. Verifique a sua conexão com a internet`,
+        imgIcon: "danger",
+        imgAlt:
+        "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
+        showMessage: true,
+      });
     }
-     getNextEvents(); //roda a função
-     getPreviousEvents();
-  }, [])
+  }
 
-
+  // roda somente na inicialização do componente
+  useEffect(() => {
+    getNextEvents(); //chama a função
+    getPreviousEvents()
+  }, []);
 
   return (
+    
     <MainContent>
+      {<Notification {...notifyUser} setNotifyUser={setNotifyUser} />}
       <Banner />
 
+      {/* PRÓXIMOS EVENTOS */}
       <section className="proximos-eventos">
         <Container>
-          <title titleText={"Próximos Eventos"} color="#fde100" />
+          <Title titleText={"Próximos Eventos"} />
 
           <div className="events-box">
-
-           {
-            nextEvents.map((e) => {
+            {nextEvents.map((e) => {
               return (
-              <NextEvent 
-              key={e.idEvento}
-              title={e.nomeEvento}
-              description={e.descricao}
-              eventDate={e.dataEvento}
-              idEvent={e.idEvento}
-              />
+                <NextEvent
+                  key={e.idEvento}
+                  title={e.nomeEvento}
+                  description={e.descricao}
+                  eventDate={e.dataEvento}
+                  idEvent={e.idEvento}
+                />
               );
-            })
-           }
-
+            })}
           </div>
         </Container>
-        
+      </section>
+      <section className="proximos-eventos">
         <Container>
-          <title titleText={"Eventos Anteriores"} color="#fde100" />
+          <Title titleText={"Eventos Anteriores"} />
 
           <div className="events-box">
-
-           {
-            previousEvents.map((p) => {
+            {previousEvents.map((e) => {
               return (
-              <PreviousEvent
-              key={p.idEvento}
-              title={p.nomeEvento}
-              description={p.descricao}
-              eventDate={p.dataEvento}
-              idEvent={p.idEvento}
-              />
+                <PreviousEvents
+                  key={e.idEvento}
+                  title={e.nomeEvento}
+                  description={e.descricao}
+                  eventDate={e.dataEvento}
+                  idEvent={e.idEvento}
+                />
               );
-            })
-           }
-
+            })}
           </div>
         </Container>
       </section>
