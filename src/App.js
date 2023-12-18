@@ -12,8 +12,6 @@ const App = () => {
     setUserData( token === null ? {}  : JSON.parse(token) );
   }, []);
 
-  
-
   return (
     <UserContext.Provider value={{ userData, setUserData }}>
       <Rotas />

@@ -1,0 +1,22 @@
+/* Para navegadores baseados em Webkit, como Chrome e Safari */
+::-webkit-scrollbar {
+  width: 9px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b51d44; /* Cor do indicador de rolagem (ponteiro) */
+  border-radius: 8px; /* Borda arredondada do indicador de rolagem */
+  transition: background-color 0.3s ease; /* Transição suave de cor ao longo de 0.3 segundos */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6b182c; /* Cor do indicador de rolagem ao passar o mouse */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #eb9aae; /* Cor da trilha da rolagem */
+}
+
+::-webkit-scrollbar-track:hover {
+  background-color: #8e4055; /* Cor da trilha da rolagem ao passar o mouse */
+}

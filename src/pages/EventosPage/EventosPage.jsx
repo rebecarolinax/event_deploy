@@ -41,33 +41,36 @@ export default function EventosPaage(props) {
 
   // READ - LIFE CICLE - Carrega os tipos de evento no carregamento do componente
   useEffect(() => {
+    async function loadEventsType() {
+      setShowSpinner(true);
+
+      try {
+        const promise = await api.get(eventsResource);
+        const promiseTipoEventos = await api.get(eventsTypeResource);
+        const promiseInstituicao = await api.get(institutionResource);
+        //só tem uma instituição neste projeto mas já fica preparado pra adicionar mais!
+        setEventos(promise.data);
+
+        const tpEventosModificado = [];
+        //retorno da api (array tipo de eventos)
+        promiseTipoEventos.data.forEach((event) => {
+          tpEventosModificado.push({
+            value: event.idTipoEvento,
+            text: event.titulo,
+          });
+        });
+
+        setTiposEvento(tpEventosModificado);
+        setInstituicao(promiseInstituicao.data[0].idInstituicao);
+        console.log(promiseTipoEventos.data);
+        // console.log(promiseInstituicao.data[0].idInstituicao);
+      } catch (error) {}
+      setShowSpinner(false);
+    }
+
     loadEventsType();
   }, [frmEdit]); //frmEdit[instituicao ]
 
-  async function loadEventsType() {
-    setShowSpinner(true);
-
-    try {
-      const promise = await api.get(eventsResource);
-      const promiseTipoEventos = await api.get(eventsTypeResource);
-      const promiseInstituicao = await api.get(institutionResource);
-      //só tem uma instituição neste projeto mas já fica preparado pra adicionar mais!
-      setEventos(await promise.data);
-
-      const tpEventosModificado = [];
-      //retorno da api (array tipo de eventos)
-      promiseTipoEventos.data.forEach((event) => {
-        tpEventosModificado.push({ value: event.idTipoEvento, text: event.titulo });
-      });
-
-      setTiposEvento(tpEventosModificado);
-      setInstituicao(promiseInstituicao.data[0].idInstituicao);
-      console.log(promiseTipoEventos.data);
-      console.log(promise.data);
-      // console.log(promiseInstituicao.data[0].idInstituicao);
-    } catch (error) {}
-    setShowSpinner(false);
-  }
   // UPDATE
   function editActionAbort() {
     setFrmEdit(false);
@@ -111,7 +114,7 @@ export default function EventosPaage(props) {
       } else {
         setNotifyUser({
           titleNote: "Erro",
-          textNote: `Problemas ao atualizar, contate o admnistrador do sistema)`,
+          textNote: `Erro na operação. Por favor verifique a conexão!)`,
           imgIcon: "danger",
           imgAlt:
             "Imagem de ilustração de atenção. Mulher ao lado do símbolo de exclamação",
@@ -121,7 +124,7 @@ export default function EventosPaage(props) {
     } catch (error) {
       setNotifyUser({
         titleNote: "Erro",
-        textNote: `Problemas ao atualizar os dados na tela ou no banco`,
+        textNote: `Problemas ao atualizar os dados na tela ou no banco!`,
         imgIcon: "danger",
         imgAlt:
           "Imagem de ilustração de atenção. Mulher ao lado do símbolo de exclamação",
@@ -165,7 +168,7 @@ export default function EventosPaage(props) {
       } else {
         setNotifyUser({
           titleNote: "Erro",
-          textNote: `O servidor bitolou, verifique se o Evento foi apagado corretamente`,
+          textNote: `Erro na operação. Por favor verifique a conexão!`,
           imgIcon: "danger",
           imgAlt:
             "Imagem de ilustração de atenção. Mulher ao lado do símbolo de exclamação",
@@ -178,7 +181,7 @@ export default function EventosPaage(props) {
     } catch (error) {
       setNotifyUser({
         titleNote: "Erro",
-        textNote: `Problemas ao apagar`,
+        textNote: `Erro na operação. Por favor verifique a conexão!`,
         imgIcon: "danger",
         imgAlt:
           "Imagem de ilustração de atenção. Mulher ao lado do símbolo de exclamação",
@@ -202,7 +205,7 @@ export default function EventosPaage(props) {
     ) {
       setNotifyUser({
         titleNote: "Atenção",
-        textNote: "Preencha os campos corretamente",
+        textNote: "Preencha os campos corretamente!",
         imgIcon: "warning",
         imgAlt:
           "Imagem de ilustração de atenção. Mulher ao lado do símbolo de exclamação",
@@ -240,7 +243,7 @@ export default function EventosPaage(props) {
     } catch (error) {
       setNotifyUser({
         titleNote: "Erro",
-        textNote: `Deu ruim ao cadastrar!!: ${error}`,
+        textNote: `Erro na operação. Por favor verifique a conexão!: ${error}`,
         imgIcon: "danger",
         imgAlt:
           "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",

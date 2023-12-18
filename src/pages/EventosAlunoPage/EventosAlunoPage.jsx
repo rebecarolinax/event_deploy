@@ -2,12 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import MainContent from "../../components/MainContent/MainContent";
 import Title from "../../components/Title/Title";
 import Table from "./TableEvA/TableEvA";
+
+import Notification from "../../components/Notification/Notification";
+
 import Container from "../../components/Container/Container";
 import { Select } from "../../components/FormComponents/FormComponents";
 import Spinner from "../../components/Spinner/Spinner";
 import Modal from "../../components/Modal/Modal";
 import api, {
   eventsResource,
+  myEventsResource,
   presencesEventResource,
   commentaryEventResource,
 } from "../../Services/Service";
@@ -29,6 +33,7 @@ const EventosAlunoPage = () => {
   const [tipoEvento, setTipoEvento] = useState("1"); //código do tipo do Evento escolhido
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [notifyUser, setNotifyUser] = useState([]);
 
   // recupera os dados globais do usuário
   const { userData } = useContext(UserContext);
@@ -36,12 +41,9 @@ const EventosAlunoPage = () => {
   const [idEvento, setIdEvento] = useState("");
   const [idComentario, setIdComentario] = useState(null);
 
-  // console.log(userData.role);
-
-
   useEffect(() => {
     loadEventsType();
-  }, [userData.userId, tipoEvento]); //
+  }, [tipoEvento, userData.userId]); //
 
   async function loadEventsType() {
     setShowSpinner(true);
@@ -51,7 +53,7 @@ const EventosAlunoPage = () => {
       try {
         const todosEventos = await api.get(eventsResource);
         const meusEventos = await api.get(
-          `${presencesEventResource}/${userData.userId}`
+          `${myEventsResource}/${userData.userId}`
         );
 
         const eventosMarcados = verificaPresenca(
@@ -83,7 +85,7 @@ const EventosAlunoPage = () => {
        */
       try {
         const retornoEventos = await api.get(
-          `${presencesEventResource}/${userData.userId}`
+          `${myEventsResource}/${userData.userId}`
         );
         // console.clear();
         // console.log("MINHAS PRESENÇAS");
@@ -152,19 +154,29 @@ const EventosAlunoPage = () => {
     try {
       // api está retornando sempre todos os comentários do usuário
       const promise = await api.get(
-        `${commentaryEventResource}/buscarComentarioId?idUsuario=${idUsuario}&idEvento=${idEvento}`
+        `${commentaryEventResource}?idUsuario=${idUsuario}&idEvento=${idEvento}`
       );
 
+      const myComm = await promise.data.filter(
+        (comm) => comm.idEvento === idEvento && comm.idUsuario === idUsuario
+      );
 
-      // const myComm = await promise.data.filter((comm) => comm.idEvento === idEvento && comm.idUsuario === idUsuario);
-      const myComm = await promise.data;
+      // console.log("QUANTIDADE DE DADOS NO ARRAY FILTER");
+      // console.log(myComm.length);
+      // console.log(myComm);
 
-      console.log(myComm);
-
-      setComentario(myComm != null ? myComm.descricao : "");
-      setIdComentario(myComm != null ? myComm.idComentarioEvento : null);
+      setComentario(myComm.length > 0 ? myComm[0].descricao : "");
+      setIdComentario(myComm.length > 0 ? myComm[0].idComentarioEvento : null);
     } catch (error) {
-      console.log("Erro ao carregar o evento");
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro na operação. Por favor verifique a conexão!`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
+
       console.log(error);
     }
   };
@@ -172,19 +184,30 @@ const EventosAlunoPage = () => {
   // cadastrar um comentário = post
   const postMyCommentary = async (descricao, idUsuario, idEvento) => {
     try {
-      const promise = await api.post(`${commentaryEventResource}/ComentarioIA`, {
+      const promise = await api.post(commentaryEventResource + "/CadastroIA", {
         descricao: descricao,
         exibe: true,
         idUsuario: idUsuario,
         idEvento: idEvento,
       });
 
-      if (promise.status === 200) {
-        alert("Comentário cadastrado com sucesso");
-      }
+      setNotifyUser({
+        titleNote: "Sucesso",
+        textNote: `Comentário cadastrado com sucesso!`,
+        imgIcon: "success",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
     } catch (error) {
-      console.log("Erro ao cadastrar o evento");
-      console.log(error);
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro na operação. Por favor verifique a conexão!`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
     }
   };
 
@@ -197,11 +220,24 @@ const EventosAlunoPage = () => {
         `${commentaryEventResource}/${idComentario}`
       );
       if (promise.status === 200) {
-        alert("comentario excluído com sucesso!");
+        setNotifyUser({
+          titleNote: "Sucesso",
+          textNote: `Comentário excluído com sucesso!`,
+          imgIcon: "success",
+          imgAlt:
+            "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+          showMessage: true,
+        });
       }
     } catch (error) {
-      console.log("Erro ao excluir ");
-      console.log(error);
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro na operação. Por favor verifique a conexão!`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
     }
   };
 
@@ -217,33 +253,67 @@ const EventosAlunoPage = () => {
 
         if (promise.status === 201) {
           loadEventsType();
-          alert("Presença confirmada, parabéns");
-        }
-      } catch (error) { }
-      return;
-    }
-    else {
-      try {
-        const unconnected = await api.delete(
-          `${presencesEventResource}/${presencaId}`
-        );
-        if (unconnected.status === 204) {
-          loadEventsType();
-          alert("Desconectado do evento");
+
+          setNotifyUser({
+            titleNote: "Sucesso",
+            textNote: `Presença Confirmada!`,
+            imgIcon: "success",
+            imgAlt:
+              "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+            showMessage: true,
+          });
         }
       } catch (error) {
-        console.log("Erro ao desconecar o usuário do evento");
-        console.log(error);
+        setNotifyUser({
+          titleNote: "Erro",
+          textNote: `Erro na operação. Por favor verifique a conexão!`,
+          imgIcon: "danger",
+          imgAlt:
+            "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+          showMessage: true,
+        });
       }
+      return;
     }
+
     // unconnect - aqui seria o else
+    try {
+      const unconnected = await api.delete(
+        `${presencesEventResource}/${presencaId}`
+      );
+      if (unconnected.status === 204) {
+        loadEventsType();
+
+        setNotifyUser({
+          titleNote: "Sucesso",
+          textNote: `Desconectado do evento com sucesso!`,
+          imgIcon: "success",
+          imgAlt:
+            "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+          showMessage: true,
+        });
+      }
+    } catch (error) {
+      setNotifyUser({
+        titleNote: "Erro",
+        textNote: `Erro na operação. Por favor verifique a conexão!`,
+        imgIcon: "danger",
+        imgAlt:
+          "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
+        showMessage: true,
+      });
+    }
   }
 
   return (
     <>
       <MainContent>
+        {<Notification {...notifyUser} setNotifyUser={setNotifyUser} />}
         <Container>
-          <Title titleText={"Eventos"} additionalClass="custom-title" />
+          <Title
+            titleText={"Eventos do Aluno"}
+            additionalClass="custom-title"
+          />
 
           <Select
             id="id-tipo-evento"

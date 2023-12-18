@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import iconeLogout from "../../assets/images/icone-logout.svg";
+import iconeLogout from "../../assets/images/logout-icon.png";
 import "./PerfilUsuario.css";
 
 import { UserContext } from "../../context/AuthContext";
@@ -29,7 +29,7 @@ const PerfilUsuario = () => {
         </>
       ) : (
         <Link to="/login" className="perfil-usuario__menuitem">
-          Login
+          Conecte-se
         </Link>
       )}
     </div>

@@ -86,10 +86,6 @@
   .table-data__icon {
     cursor: pointer;
   }
-
-  .Link{
-    color: white;
-  }
   
   @media screen and (min-width: 992px) {
     .table-data__head-title,

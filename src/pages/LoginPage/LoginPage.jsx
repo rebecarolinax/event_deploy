@@ -6,12 +6,15 @@ import loginImage from "../../assets/images/login.svg";
 import api, { loginResource } from "../../Services/Service";
 import { useNavigate } from "react-router-dom";
 
+import Notification from "../../components/Notification/Notification";
 import "./LoginPage.css";
 import { UserContext, userDecodeToken } from "../../context/AuthContext";
 
 const LoginPage = () => {
-  const [user, setUser] = useState({ email: "rebeca@comum.com", senha: "gustavolindo" });
-  //as credenciais do comum é comum@comum.com comum123
+  const [user, setUser] = useState({
+    email: "rebeca@admin.com",
+    senha: "gustavolindo",
+  });
   //importa os dados globais do usuário
   const { userData, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
@@ -28,8 +31,6 @@ const LoginPage = () => {
     // validar usuário e senha:
     // tamanho mínimo de caracteres : 3
     if (user.email.length >= 3 && user.senha.length >= 3) {
-      
-      
       try {
         const promise = await api.post(loginResource, {
           email: user.email,
@@ -37,19 +38,33 @@ const LoginPage = () => {
         });
 
         const userFullToken = userDecodeToken(promise.data.token); // decodifica o token vindo da api
+
         setUserData(userFullToken); // guarda o token globalmente
         localStorage.setItem("token", JSON.stringify(userFullToken));
         navigate("/"); //envia o usuário para a home
       } catch (error) {
         // erro da api: bad request (401) ou erro de conexão
-        alert("Verifique os dados e a conexão com a internet!");
-        console.log("ERROS NO LOGIN DO USUÁRIO");
-        console.log(error);
+        // setNotifyUser({
+        //   titleNote: "Erro",
+        //   textNote: `Erro na operação. Por favor verifique a conexão!`,
+        //   imgIcon: "danger",
+        //   imgAlt:
+        //     "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
+        //   showMessage: true,
+        // });
       }
     } else {
-      alert("Preencha os dados corretamente");
+      // setNotifyUser({
+      //   titleNote: "Erro",
+      //   textNote: `Erro na operação. Por favor verifique a conexão!`,
+      //   imgIcon: "danger",
+      //   imgAlt:
+      //     "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
+      //   showMessage: true,
+      // });
     }
   }
+
   return (
     <div className="layout-grid-login">
       <div className="login">

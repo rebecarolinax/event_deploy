@@ -10,25 +10,42 @@
 }
 
 body {
-  font-family: 'Poppins-Regular','Courier New', Courier, monospace;
+  font-family: "Poppins-Regular", "Courier New", Courier, monospace;
+}
+
+/* Para navegadores baseados em Webkit, como Chrome e Safari */
+::-webkit-scrollbar {
+  width: 12px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: #00263f ; /* Cor do indicador de rolagem (ponteiro) */
+  border-radius: 6px; /* Borda arredondada do indicador de rolagem */
+  transition: background-color 0.3s ease; /* Transição suave de cor ao longo de 0.3 segundos */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #2980b9; /* Cor do indicador de rolagem ao passar o mouse */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Cor da trilha da rolagem */
+}
+
+::-webkit-scrollbar-track:hover {
+  background-color: #eaeaea; /* Cor da trilha da rolagem ao passar o mouse */
 }
 
 :root {
   /* Variáveis de tema */
-  
+
   /* smartphone */
   --color-white: #fff;
   --color-dark-blue: #201849;
   --color-blue-red: #511948;
-  --color-medium-red: #821B47;
-  --color-red: #B51D44;
+  --color-medium-red: #821b47;
+  --color-red: #b51d44;
   --text-color: #000;
-  
+
   /* desktop */
-
 }
-
-/* main {
-  border: 1px solid green;
-  margin-top: 55px;
-} */

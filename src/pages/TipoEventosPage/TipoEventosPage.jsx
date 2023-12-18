@@ -12,7 +12,6 @@ import Notification from "../../components/Notification/Notification";
 import Spinner from "../../components/Spinner/Spinner";
 
 const TipoEventosPage = () => {
-  
   // states
   const [frmEdit, setFrmEdit] = useState(false); //está em modo edição?
   const [titulo, setTitulo] = useState("");
@@ -26,7 +25,7 @@ const TipoEventosPage = () => {
     // define a chamada em nossa api
     async function loadEventsType() {
       setShowSpinner(true);
-      
+
       try {
         const retorno = await api.get(eventsTypeResource);
         setTipoEventos(retorno.data);
@@ -50,7 +49,7 @@ const TipoEventosPage = () => {
     if (titulo.trim().length < 3) {
       setNotifyUser({
         titleNote: "Aviso",
-        textNote: `O título deve ter pelo menos 3 caracteres`,
+        textNote: `O título deve conter pelo menos 3 caracteres!`,
         imgIcon: "warning",
         imgAlt:
           "Imagem de ilustração de aviso. Moça em frente a um símbolo de exclamação!",
@@ -68,7 +67,7 @@ const TipoEventosPage = () => {
       // avisa o usuário
       setNotifyUser({
         titleNote: "Sucesso",
-        textNote: `TipoEvento cadastrado com sucesso`,
+        textNote: `Tipo de eventos cadastrado com sucesso!`,
         imgIcon: "success",
         imgAlt:
           "Imagem de ilustração de sucesso. Moça segurando um balão com símbolo de confirmação ok.",
@@ -81,7 +80,7 @@ const TipoEventosPage = () => {
     } catch (error) {
       setNotifyUser({
         titleNote: "Erro",
-        textNote: `Erro na operação. Verifique a conexão com a internet`,
+        textNote: `Erro na operação. Verifique a conexão com a internet!`,
         imgIcon: "danger",
         imgAlt:
           "Imagem de ilustração de erro. Rapaz segurando um balão com símbolo x.",
@@ -118,11 +117,10 @@ const TipoEventosPage = () => {
 
     try {
       // atualiar na api
-     
-      const retorno = await api.put(eventsTypeResource + "/" + idEvento,{
-        titulo : titulo
+
+      const retorno = await api.put(eventsTypeResource + "/" + idEvento, {
+        titulo: titulo,
       }); //o id está no state
-      
 
       if (retorno.status === 204) {
         setNotifyUser({
@@ -180,7 +178,13 @@ const TipoEventosPage = () => {
           setTipoEventos(buscaEventos.data); //aqui retorna um array, então de boa!
         }
       } catch (error) {
-        alert("Problemas ao apagar o elemento!");
+        setNotifyUser({
+          titleNote: "Atenção",
+          textNote: `Problemas ao apagar o elemento!`,
+          imgIcon: "warning",
+          imgAlt: "Imagem de ilustração de warning.",
+          showMessage: true,
+        });
       }
       setShowSpinner(false);
     }
@@ -188,10 +192,10 @@ const TipoEventosPage = () => {
   return (
     <>
       {<Notification {...notifyUser} setNotifyUser={setNotifyUser} />}
-      
+
       {/* SPINNER - Feito com position */}
       {showSpinner ? <Spinner /> : null}
-      
+
       <MainContent>
         {/* formulário de cadastro do tipo do evento */}
         <section className="cadastro-evento-section">

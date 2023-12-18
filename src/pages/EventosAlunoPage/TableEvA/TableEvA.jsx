@@ -56,15 +56,15 @@ const Table = ({ dados, fnConnect = null, fnShowModal = null }) => {
                   manipulationFunction={
                     new Date(e.dataEvento) > Date.now()
                       ? () => {
-                        fnConnect(
-                          e.idEvento,
-                          e.situacao ? "unconnect" : "connect",
-                          e.idPresencaEvento //parâmetro opcional
-                        );
-                      }
+                          fnConnect(
+                            e.idEvento,
+                            e.situacao ? "unconnect" : "connect",
+                            e.idPresencaEvento //parâmetro opcional
+                          );
+                        }
                       : () => {
-                        alert("Evento não está mais disponível");
-                      }
+                          alert("Evento não está mais disponível");
+                        }
                   }
                 />
               </td>
